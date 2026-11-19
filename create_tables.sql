@@ -240,3 +240,85 @@ CREATE TABLE FEEDING_LOG (
     FOREIGN KEY (StaffID) REFERENCES dbo.STAFF(StaffID),
     CHECK (QuantityGiven >= 0)
 );
+
+USE ZooManagementDB;
+GO
+
+-- TABLE 16: CARE_ASSIGNMENT
+CREATE TABLE CARE_ASSIGNMENT (
+    AssignmentID INT IDENTITY(1,1) PRIMARY KEY,
+    StaffID INT NOT NULL,
+    AnimalID INT NOT NULL,
+    StartDate DATE NOT NULL,
+    EndDate DATE,
+    Responsibility VARCHAR(100),
+
+    FOREIGN KEY (StaffID) REFERENCES dbo.STAFF(StaffID),
+    FOREIGN KEY (AnimalID) REFERENCES dbo.ANIMAL(AnimalID),
+    CHECK (EndDate IS NULL OR EndDate >= StartDate),
+    UNIQUE (StaffID, AnimalID, StartDate)
+);
+
+
+-- TABLE 17: MEDICAL_RECORD
+CREATE TABLE MEDICAL_RECORD (
+    RecordID INT IDENTITY(1,1) PRIMARY KEY,
+    AnimalID INT NOT NULL,
+    VetID INT NOT NULL,
+    CheckupDate DATE NOT NULL,
+    Diagnosis VARCHAR(255),
+    Treatment VARCHAR(255),
+    NextCheckup DATE,
+
+    FOREIGN KEY (AnimalID) REFERENCES dbo.ANIMAL(AnimalID),
+    FOREIGN KEY (VetID) REFERENCES dbo.STAFF(StaffID),
+    CHECK (NextCheckup IS NULL OR NextCheckup > CheckupDate)
+);
+
+
+-- TABLE 18: VACCINATION
+CREATE TABLE VACCINATION (
+    VaccinationID INT IDENTITY(1,1) PRIMARY KEY,
+    AnimalID INT NOT NULL,
+    VetID INT NOT NULL,
+    VaccineName VARCHAR(100) NOT NULL,
+    DateGiven DATE NOT NULL,
+    NextDue DATE,
+
+    FOREIGN KEY (AnimalID) REFERENCES dbo.ANIMAL(AnimalID),
+    FOREIGN KEY (VetID) REFERENCES dbo.STAFF(StaffID),
+    CHECK (NextDue IS NULL OR NextDue > DateGiven)
+);
+
+
+-- TABLE 19: TICKET_TYPE
+CREATE TABLE TICKET_TYPE (
+    TicketTypeID INT IDENTITY(1,1) PRIMARY KEY,
+    Name VARCHAR(50) NOT NULL UNIQUE,
+    Price DECIMAL(8,2) NOT NULL,
+    Description VARCHAR(200),
+
+    CHECK (Price >= 0)
+);
+
+
+-- TABLE 20: TICKET
+CREATE TABLE TICKET (
+    TicketID INT IDENTITY(1,1) PRIMARY KEY,
+    TicketTypeID INT NOT NULL,
+    SoldByStaffID INT NULL,
+    VisitDate DATE NOT NULL,
+    PurchasedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    Quantity INT NOT NULL,
+    TotalPrice DECIMAL(10,2) NOT NULL,
+
+    FOREIGN KEY (TicketTypeID)
+        REFERENCES dbo.TICKET_TYPE(TicketTypeID),
+
+    FOREIGN KEY (SoldByStaffID)
+        REFERENCES dbo.STAFF(StaffID)
+        ON DELETE SET NULL,
+
+    CHECK (Quantity > 0),
+    CHECK (TotalPrice >= 0)
+);
