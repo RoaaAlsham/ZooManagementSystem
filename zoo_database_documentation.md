@@ -64,7 +64,12 @@ It also separates **plans** from **events** (FEEDING_PLAN vs FEEDING_LOG) and ke
 
 ---
 
-## 3. Entity Relationship Diagram
+## 3. Entity Relationship Diagram (Physical)
+
+This section shows the **physical** ER diagram: tables with typed attributes, PK/FK markers, and crow’s-foot relationships (implementation-oriented).
+
+- **Conceptual ER** (entities & relationships without DBMS detail): [`project_report/03_design/A_conceptual/conceptual_er_diagram.md`](project_report/03_design/A_conceptual/conceptual_er_diagram.md)
+- **Physical ER** (report copy): [`project_report/03_design/C_physical/physical_er_diagram.md`](project_report/03_design/C_physical/physical_er_diagram.md)
 
 Paste the code below into [mermaid.live](https://mermaid.live) (or any Mermaid-compatible tool) to render the diagram.
 
