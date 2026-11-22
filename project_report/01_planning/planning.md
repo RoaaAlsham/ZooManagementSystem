@@ -75,4 +75,4 @@ A unified **Zoo Database Management System** can:
 
 ## 1.6 Next Phase
 
-**Analysis** gathers facts about *how users work* and turns them into **UI page requirements**—what screens and tasks the system must support—before detailed table design.
+**Analysis** gathers facts about *how users work* and turns them into **UI screen requirements**—a lean set of **10 core screens** (with merges for secondary flows)—before detailed table design.

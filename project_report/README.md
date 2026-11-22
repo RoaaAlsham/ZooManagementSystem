@@ -14,7 +14,7 @@ This report follows the **Database Development Lifecycle**. Each phase has its o
 |---|---|---|
 | **0. Cover** | [`00_cover/`](00_cover/) | Title page and report overview |
 | **1. Planning** | [`01_planning/`](01_planning/) | Information gap and proposed database solution |
-| **2. Analysis** | [`02_analysis/`](02_analysis/) | Fact-finding and UI page requirements from user needs |
+| **2. Analysis** | [`02_analysis/`](02_analysis/) | Fact-finding and **10 core UI screens** from user needs |
 | **3. Design** | [`03_design/`](03_design/) | Conceptual → Logical → Physical design |
 
 ### Design Sub-Phases

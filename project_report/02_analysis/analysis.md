@@ -13,7 +13,7 @@ Planning showed *why* a unified database is needed. Analysis answers:
 - What information must appear on each screen?  
 - Which data domains must the database support so those screens work?  
 
-The main analysis deliverable in this project is the set of **initial UI page requirements** derived from user needs. Detailed page specs live in [`ui_pages_requirements.md`](ui_pages_requirements.md) and in the full design note [`../../zoo_ui_pages_design.md`](../../zoo_ui_pages_design.md).
+The main analysis deliverable is a **lean UI of 10 core screens** derived from user needs (secondary flows merged into hubs). Details: [`ui_pages_requirements.md`](ui_pages_requirements.md) and [`../../zoo_ui_pages_design.md`](../../zoo_ui_pages_design.md).
 
 ---
 
@@ -21,9 +21,9 @@ The main analysis deliverable in this project is the set of **initial UI page re
 
 | Role | Main needs |
 |---|---|
-| **Manager / Admin** | Overview alerts, staff, habitats, reports, settings |
-| **Keeper** | Animal list/detail, feeding today, feeding plans, care assignments |
-| **Veterinarian** | Medical records, vaccinations, species / health status |
+| **Manager / Admin** | Staff, habitats, inventory, settings, oversight |
+| **Keeper** | Animal list/detail, feeding today, care on animal hub |
+| **Veterinarian** | Vet queues; medical/vaccine history on animal detail |
 | **Cashier** | Ticket sales (point of sale) |
 
 ---
@@ -32,34 +32,36 @@ The main analysis deliverable in this project is the set of **initial UI page re
 
 | User need (observed / assumed) | System response |
 |---|---|
-| “Show me what needs attention today.” | Dashboard with alerts (missed feedings, due vaccines, low stock, full enclosures) |
-| “Find an animal and see everything about it.” | Animal-centric detail page (care, health, feeding, transfers) |
-| “Log that I fed this animal.” | Feeding Today worksheet + feeding log |
-| “Move an animal to another enclosure.” | Transfer action that keeps history |
-| “Sell tickets quickly.” | Ticketing POS by ticket type |
-| “Who works when?” | Staff directory + shift schedule |
+| “Find an animal and see everything about it.” | **P04 Animal Detail** hub (care, health, feeding plans, transfers, edit) |
+| “Register a new animal.” | **Add** wizard from **P03 Animal List** |
+| “Log that I fed this animal.” | **P09 Feeding Today** |
+| “Move an animal to another enclosure.” | Transfer **dialog on P04** (history kept) |
+| “Sell tickets quickly.” | **P17 Ticketing** |
+| “Who works when?” | **Shifts tab on P15 Staff** |
 | “Don’t lose history.” | No hard deletes for important history; end / deactivate instead |
+| “Manage rare lookups.” | **P19 Admin** (species, ticket types, zoo, departments) |
 
 ---
 
-## 2.4 Initial UI Page Requirements (Overview)
+## 2.4 Core UI Screen Requirements (Overview)
 
-Pages are **task-oriented** (how staff work), not one page per table.
+Screens are **task-oriented** and limited to **10** for an efficient build.
 
-| ID | Page | Primary users |
+| ID | Screen | Primary users |
 |---|---|---|
 | P01 | Login | Everyone |
-| P02 | Dashboard | Manager, all |
-| P03–P06 | Animals (list, detail, add/edit, transfer) | Manager, Keeper, Vet |
+| P03 | Animal List (+ Add) | Manager, Keeper, Vet |
+| P04 | Animal Detail (hub) | Manager, Keeper, Vet |
 | P07 | Habitats and Enclosures | Manager |
-| P08 | Species and Conservation | Manager, Vet |
-| P09–P11 | Care (feeding today, plans, assignments) | Keeper, Manager |
+| P09 | Feeding Today | Keeper |
 | P12 | Veterinary Center | Vet |
-| P13–P14 | Supplies (inventory, suppliers) | Manager, Keeper |
-| P15–P16 | People (staff, shifts) | Manager |
+| P13 | Food Inventory (+ Suppliers) | Manager, Keeper |
+| P15 | Staff Directory (+ Shifts) | Manager |
 | P17 | Ticketing | Cashier |
-| P18 | Reports | Manager |
-| P19 | Admin Settings | Admin |
+| P19 | Admin Settings (+ Species) | Admin |
+
+**Merged away as separate pages:** Add/Edit route, Transfer route, Species page, Feeding Plans page, Care Assignments page, Suppliers page, Shift Schedule page, Reports page.  
+**Stretch (optional later):** Dashboard (P02).
 
 Full navigation map, role matrix, and page-to-table mapping: see [`ui_pages_requirements.md`](ui_pages_requirements.md).
 
@@ -68,9 +70,9 @@ Full navigation map, role matrix, and page-to-table mapping: see [`ui_pages_requ
 ## 2.5 Analysis Outcomes
 
 - [x] Roles identified  
-- [x] Core tasks mapped to proposed UI pages  
-- [x] Initial page list and access matrix defined  
-- [x] Link established between pages and future data domains (feeds Design)  
+- [x] Core tasks mapped to **10** proposed UI screens  
+- [x] Merges and deferred screens documented  
+- [x] Link established between screens and data domains (feeds Design)  
 
 ---
 

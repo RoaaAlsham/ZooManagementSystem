@@ -28,7 +28,7 @@ Zoos manage animals, staff, habitats, feeding, veterinary care, and visitors. Wh
 ## Report Structure
 
 1. **Planning** — Problem / opportunity and proposed database solution  
-2. **Analysis** — Fact-finding; initial UI pages derived from user needs  
+2. **Analysis** — Fact-finding; **10 core UI screens** derived from user needs (secondary flows merged)  
 3. **Design**
    - **A. Conceptual Design** — Entities, relationships, business constraints; conceptual ER  
    - **B. Logical Design** — Relational tables, keys, normalization; schema documentation  
