@@ -46,3 +46,4 @@ This report follows the **Database Development Lifecycle**. Each phase has its o
 | Schema documentation | [`../zoo_database_documentation.md`](../zoo_database_documentation.md) | Logical / Physical |
 | UI pages design | [`../zoo_ui_pages_design.md`](../zoo_ui_pages_design.md) | Analysis |
 | SQL script | [`../Zoo_Database.sql`](../Zoo_Database.sql) | Physical |
+| Implementation plan (Python) | [`../IMPLEMENTATION_PLAN.md`](../IMPLEMENTATION_PLAN.md) | Build next steps |
