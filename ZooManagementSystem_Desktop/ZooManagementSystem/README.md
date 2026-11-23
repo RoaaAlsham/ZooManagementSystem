@@ -17,6 +17,8 @@ Built with **Python + Tkinter** (user interface) and **Microsoft SQL Server** (d
 2. **File → Open → File…** → choose `database/ZooDB_FULL.sql`.
 3. Click inside the script (select nothing) and press **F5**.
    The script deletes an old ZooDB, creates the 20 tables and inserts sample data.
+4. Then open `database/ZooDB_Functions_Procedures.sql` and press **F5** (creates 3 functions and 5 stored procedures).
+5. Optional: run `database/ZooDB_Functions_Procedures_TEST.sql` — the last result grid must show only PASS.
 
 ## 2. Connection settings
 
