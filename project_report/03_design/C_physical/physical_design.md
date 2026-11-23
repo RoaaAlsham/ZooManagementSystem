@@ -8,26 +8,30 @@
 
 | Item | Choice for this project |
 |---|---|
-| Dialect of examples | **PostgreSQL-style** SQL |
-| Portability | Notes where MySQL / SQL Server differ (documented in schema docs) |
-| Script | [`../../../Zoo_Database.sql`](../../../Zoo_Database.sql) |
+| **DBMS** | **Microsoft SQL Server** (Express is sufficient for development/demo) |
+| **Dialect** | **T-SQL** |
+| **Client integration** | Python desktop app via **ODBC** (`pyodbc`) |
+| **Official script** | [`../../../ZooManagementSystem_Desktop/ZooManagementSystem/database/ZooDB_FULL.sql`](../../../ZooManagementSystem_Desktop/ZooManagementSystem/database/ZooDB_FULL.sql) |
 
 Physical decisions reflected in the script include:
 
-- Explicit `CREATE TABLE` order respecting foreign-key dependencies  
+- `CREATE DATABASE ZooDB` and ordered `CREATE TABLE` statements respecting foreign-key dependencies  
+- `INT IDENTITY(1,1)` primary keys  
+- `NVARCHAR` / `DECIMAL` / `DATE` / `TIME` / `DATETIME2` column types  
 - `PRIMARY KEY`, `FOREIGN KEY`, `UNIQUE`, and `CHECK` constraints  
-- `ON DELETE` behavior where appropriate (e.g. cascade on shifts)  
-- SQL data types (`INT`, `VARCHAR(n)`, `DECIMAL`, `DATE`, `TIME`, `TIMESTAMP`)
+- `ON DELETE CASCADE` where appropriate (e.g. staff shifts)  
+- Sample seed data for demonstration logins and day-to-day screens  
+- Application support column `STAFF.PasswordHash` (hashed credentials for login)
 
 ---
 
 ## 3.C.2 From Logical to Physical
 
-| Logical | Physical |
+| Logical | Physical (SQL Server) |
 |---|---|
 | Relation | `CREATE TABLE` |
-| Column + domain | Typed column (`VARCHAR(100)`, `DECIMAL(10,2)`, …) |
-| Primary key | `PRIMARY KEY` |
+| Column + domain | Typed column (`NVARCHAR(100)`, `DECIMAL(10,2)`, …) |
+| Surrogate key | `INT IDENTITY(1,1) PRIMARY KEY` |
 | Foreign key | `FOREIGN KEY ... REFERENCES ...` |
 | Business rule | `CHECK (...)` / `UNIQUE (...)` |
 | Conceptual/logical ER | **Physical ER** (crow’s-foot tables with attributes) |
@@ -38,9 +42,10 @@ Physical decisions reflected in the script include:
 
 | Artifact | Location |
 |---|---|
-| SQL DDL (create all 20 tables) | [`../../../Zoo_Database.sql`](../../../Zoo_Database.sql) |
+| T-SQL DDL + seed (all 20 tables) | [`../../../ZooManagementSystem_Desktop/ZooManagementSystem/database/ZooDB_FULL.sql`](../../../ZooManagementSystem_Desktop/ZooManagementSystem/database/ZooDB_FULL.sql) |
 | Physical ER diagram | [`physical_er_diagram.md`](physical_er_diagram.md) |
 | Full data dictionary & examples | [`../../../zoo_database_documentation.md`](../../../zoo_database_documentation.md) §3–§8 |
+| Desktop app (integration) | [`../../../ZooManagementSystem_Desktop/ZooManagementSystem/`](../../../ZooManagementSystem_Desktop/ZooManagementSystem/) |
 
 ---
 
@@ -66,11 +71,21 @@ It corresponds to Section 3 of the schema documentation and is copied for the re
 
 ---
 
-## 3.C.6 Outcomes
+## 3.C.6 How to Load the Database (demo)
 
-- [x] Logical schema implemented as `Zoo_Database.sql`  
+1. Install **Microsoft SQL Server** and connect with **SSMS**.  
+2. Open `ZooDB_FULL.sql`, click in the script, press **F5** (creates `ZooDB`, 20 tables, sample data).  
+3. Point the desktop app’s `zoo_settings.ini` `server` value at the same instance (default `.\SQLEXPRESS`).  
+4. Run the Tkinter application; it connects through ODBC and performs parameterized DML and multi-statement **transactions**.
+
+---
+
+## 3.C.7 Outcomes
+
+- [x] Logical schema implemented as **Microsoft SQL Server** T-SQL (`ZooDB_FULL.sql`)  
 - [x] Physical ER diagram produced (tables + attributes + crow’s foot)  
 - [x] Constraints enforced at the DBMS level  
-- [ ] Optional later: indexes, views, sample seed data, performance notes  
+- [x] Sample seed data included for a live demo  
+- [x] Database integrated with the Python / Tkinter desktop system  
 
-**End of Design phase** for this course report. Implementation of the application UI (from Analysis) can follow using this physical schema.
+**End of Design phase** for this course report. The physical schema is the same database used by the integrated desktop application.

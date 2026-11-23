@@ -1,8 +1,9 @@
 # Zoo Management System — Database Design Project Report
 
 **University:** Fatih Sultan Mehmet Foundation University  
-**Course:** Database System Design  
+**Course:** Database System Design (SEN22321E)  
 **Project:** Zoo Database Management System  
+**DBMS:** Microsoft SQL Server  
 
 ---
 
@@ -23,7 +24,7 @@ This report follows the **Database Development Lifecycle**. Each phase has its o
 |---|---|---|
 | **A. Conceptual Design** | [`03_design/A_conceptual/`](03_design/A_conceptual/) | Entities, relationships, constraints (no DBMS details); **conceptual ER diagram** |
 | **B. Logical Design** | [`03_design/B_logical/`](03_design/B_logical/) | Relational schema, 3NF tables, data dictionary; schema documentation |
-| **C. Physical Design** | [`03_design/C_physical/`](03_design/C_physical/) | SQL DDL for the chosen DBMS; **physical ER diagram** |
+| **C. Physical Design** | [`03_design/C_physical/`](03_design/C_physical/) | **Microsoft SQL Server** T-SQL DDL; **physical ER diagram** |
 
 ---
 
@@ -39,11 +40,11 @@ This report follows the **Database Development Lifecycle**. Each phase has its o
 
 ---
 
-## Related Project Artifacts (Repository Root)
+## Related Project Artifacts
 
 | Artifact | Path | Used in |
 |---|---|---|
 | Schema documentation | [`../zoo_database_documentation.md`](../zoo_database_documentation.md) | Logical / Physical |
 | UI pages design | [`../zoo_ui_pages_design.md`](../zoo_ui_pages_design.md) | Analysis |
-| SQL script | [`../Zoo_Database.sql`](../Zoo_Database.sql) | Physical |
-| Implementation plan (Python) | [`../IMPLEMENTATION_PLAN.md`](../IMPLEMENTATION_PLAN.md) | Build next steps |
+| **SQL Server DDL + seed** | [`../ZooManagementSystem_Desktop/ZooManagementSystem/database/ZooDB_FULL.sql`](../ZooManagementSystem_Desktop/ZooManagementSystem/database/ZooDB_FULL.sql) | Physical (official script) |
+| Desktop application | [`../ZooManagementSystem_Desktop/ZooManagementSystem/`](../ZooManagementSystem_Desktop/ZooManagementSystem/) | Integration (Tkinter + `pyodbc`) |

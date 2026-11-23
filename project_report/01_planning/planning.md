@@ -48,7 +48,7 @@ A unified **Zoo Database Management System** can:
 
 ## 1.4 Proposed Database Solution
 
-**Solution:** Design and implement a **normalized relational database** (target: ~20 tables in 3NF) that covers:
+**Solution:** Design and implement a **normalized relational database** (**20 tables** in 3NF) on **Microsoft SQL Server**, integrated with a **Python + Tkinter** desktop application, covering:
 
 | Domain | What the database will hold |
 |---|---|
@@ -59,7 +59,14 @@ A unified **Zoo Database Management System** can:
 | Care & health | Care assignments, medical records, vaccinations |
 | Visitors | Ticket types and ticket sales |
 
-**Out of scope for this course phase (may come later):** full application code, authentication product, and deployment infrastructure. The report focuses on **planning → analysis → database design** and the SQL schema.
+**Project constraints (agreed by the team):**
+
+| Constraint | Choice |
+|---|---|
+| Team size | 3 students |
+| DBMS | **Microsoft SQL Server** (T-SQL; Express OK) |
+| Application stack | Python + **Tkinter** UI, **pyodbc** ODBC client |
+| Delivery focus | Planning → analysis → database design → working integrated system |
 
 ---
 
@@ -69,7 +76,8 @@ A unified **Zoo Database Management System** can:
 - [x] Unified database proposed as the solution  
 - [x] Main data domains listed  
 - [ ] Stakeholder list and interview notes *(optional appendix — fill if available)*  
-- [ ] Project constraints (time, DBMS choice, team size) *(fill before submission)*  
+- [x] Project constraints (time, DBMS = SQL Server, team size = 3)  
+
 
 ---
 

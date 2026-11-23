@@ -62,6 +62,7 @@ erDiagram
         string Email
         date HireDate
         decimal Salary
+        string PasswordHash
     }
     STAFF_SHIFT {
         int ShiftID PK
@@ -204,6 +205,6 @@ erDiagram
 
 ## Link to SQL
 
-After the physical ER is approved, tables are created with:
+Tables are created on **Microsoft SQL Server** with the official T-SQL script (DDL + sample data):
 
-[`../../../Zoo_Database.sql`](../../../Zoo_Database.sql)
+[`../../../ZooManagementSystem_Desktop/ZooManagementSystem/database/ZooDB_FULL.sql`](../../../ZooManagementSystem_Desktop/ZooManagementSystem/database/ZooDB_FULL.sql)

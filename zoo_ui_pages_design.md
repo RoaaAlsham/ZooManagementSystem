@@ -6,7 +6,7 @@ For every screen it gives the purpose, components, content, functions, **SQL** b
 
 > Conventions
 > - `:name` marks a **parameter** supplied by the UI (always use prepared statements / parameterized queries; never build SQL by string concatenation).
-> - SQL is PostgreSQL-style. In MySQL use `CURDATE()`, `NOW()`, `CONCAT()`, `LIKE`; in SQL Server use `GETDATE()`, `DATEADD()`.
+> - SQL examples target **Microsoft SQL Server (T-SQL)** (`CAST(GETDATE() AS DATE)`, `DATEADD`, `CONCAT`). The implemented desktop app uses `?` parameters via `pyodbc`.
 > - Query names Q1 to Q15 refer to the example queries in the schema documentation.
 
 ---

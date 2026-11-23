@@ -25,6 +25,7 @@ The main analysis deliverable is a **lean UI of 10 core screens** derived from u
 | **Keeper** | Animal list/detail, feeding today, care on animal hub |
 | **Veterinarian** | Vet queues; medical/vaccine history on animal detail |
 | **Cashier** | Ticket sales (point of sale) |
+| **Maintenance** | Habitats and enclosures (condition / capacity view) |
 
 ---
 

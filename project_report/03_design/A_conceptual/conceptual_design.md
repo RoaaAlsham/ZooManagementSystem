@@ -65,7 +65,7 @@ This phase structures all information requirements collected in Analysis into a 
 - Feeding **plans** (intended diet) are separate from feeding **logs** (what actually happened).  
 - A transfer’s source enclosure must differ from its destination.  
 - Ticket sales refer to a ticket **type** (price list) rather than storing a free-text price only.  
-- Staff roles include Manager, Keeper, Veterinarian, Cashier (and similar).  
+- Staff roles include Manager, Keeper, Veterinarian, Cashier, and Maintenance.  
 
 ---
 

@@ -1,8 +1,10 @@
 # Zoo Database Management System: Schema Documentation
 
-**Course:** Database Management
-**Scope:** 20 tables, relational design in 3rd Normal Form (3NF)
-**SQL dialect of examples:** PostgreSQL-style (notes given where MySQL / SQL Server differ)
+**Course:** Database System Design  
+**Scope:** 20 tables, relational design in 3rd Normal Form (3NF)  
+**DBMS:** Microsoft SQL Server  
+**SQL dialect of examples:** **T-SQL** (SQL Server)  
+**Official DDL script:** [`ZooManagementSystem_Desktop/ZooManagementSystem/database/ZooDB_FULL.sql`](ZooManagementSystem_Desktop/ZooManagementSystem/database/ZooDB_FULL.sql)
 
 ---
 
@@ -127,6 +129,7 @@ erDiagram
         string Email
         date HireDate
         decimal Salary
+        string PasswordHash
     }
     STAFF_SHIFT {
         int ShiftID PK
@@ -308,11 +311,12 @@ Legend: **PK** primary key, **FK** foreign key, **UQ** unique, **NN** not null, 
 | SupervisorID | INT | FK to STAFF (self), NULL allowed | Direct supervisor (NULL for top management) |
 | FirstName | VARCHAR(50) | NN | First name |
 | LastName | VARCHAR(50) | NN | Last name |
-| Role | VARCHAR(50) | NN | Job role (Keeper, Veterinarian, Cashier, Manager...) |
-| Phone | VARCHAR(20) | | Phone number |
-| Email | VARCHAR(100) | UQ | Email address |
+| Role | NVARCHAR(50) | NN, CK | Job role: Manager, Keeper, Veterinarian, Cashier, Maintenance |
+| Phone | NVARCHAR(20) | | Phone number |
+| Email | NVARCHAR(100) | UQ | Email address |
 | HireDate | DATE | NN | Date hired |
 | Salary | DECIMAL(10,2) | CK (Salary >= 0) | Monthly salary |
+| PasswordHash | NVARCHAR(255) | | Hashed password for application login (SQL Server physical schema) |
 
 #### STAFF_SHIFT
 **Purpose:** Records when each employee works.
@@ -652,7 +656,7 @@ These cannot be expressed with a simple CHECK because they involve other rows or
 
 ## 8. Example Queries
 
-> Notes: Queries use PostgreSQL syntax. In **MySQL**, replace `CURRENT_DATE + INTERVAL '30 days'` with `CURDATE() + INTERVAL 30 DAY`. In **SQL Server**, use `GETDATE()` and `DATEADD`.
+> Notes: Queries use **Microsoft SQL Server (T-SQL)** syntax (`CAST(GETDATE() AS DATE)`, `DATEADD`, `CONCAT`, `COALESCE`).
 
 ### Q1. List all animals with their species, enclosure, and habitat
 ```sql
@@ -692,7 +696,7 @@ ORDER BY CurrentAnimals DESC;
 SELECT a.Name AS Animal, v.VaccineName, v.NextDue
 FROM VACCINATION v
 JOIN ANIMAL a ON v.AnimalID = a.AnimalID
-WHERE v.NextDue BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '30 days'
+WHERE v.NextDue BETWEEN CAST(GETDATE() AS DATE) AND DATEADD(DAY, 30, CAST(GETDATE() AS DATE))
 ORDER BY v.NextDue;
 ```
 *Use:* vet's reminder list.
@@ -704,7 +708,7 @@ FROM ANIMAL a
 JOIN MEDICAL_RECORD m ON m.AnimalID = a.AnimalID
 WHERE a.HealthStatus <> 'Deceased'
 GROUP BY a.AnimalID, a.Name
-HAVING MAX(m.NextCheckup) < CURRENT_DATE
+HAVING MAX(m.NextCheckup) < CAST(GETDATE() AS DATE)
 ORDER BY NextCheckup;
 ```
 *Use:* find animals that missed their follow-up.
@@ -729,7 +733,7 @@ JOIN ANIMAL    a  ON fp.AnimalID = a.AnimalID
 JOIN FOOD_TYPE ft ON fp.FoodID   = ft.FoodID
 LEFT JOIN FEEDING_LOG fl
        ON fl.PlanID = fp.PlanID
-      AND CAST(fl.FedAt AS DATE) = CURRENT_DATE
+      AND CAST(fl.FedAt AS DATE) = CAST(GETDATE() AS DATE)
 WHERE fl.LogID IS NULL
   AND a.HealthStatus <> 'Deceased'
 ORDER BY fp.FeedingTime;
@@ -757,7 +761,7 @@ SELECT ft.Name AS Food, fs.Quantity, fs.ExpiryDate, sp.Name AS Supplier
 FROM FOOD_STOCK fs
 JOIN FOOD_TYPE ft ON fs.FoodID     = ft.FoodID
 JOIN SUPPLIER  sp ON fs.SupplierID = sp.SupplierID
-WHERE fs.ExpiryDate BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '14 days'
+WHERE fs.ExpiryDate BETWEEN CAST(GETDATE() AS DATE) AND DATEADD(DAY, 14, CAST(GETDATE() AS DATE))
 ORDER BY fs.ExpiryDate;
 ```
 *Use:* reduce waste by using soon-to-expire food first.
@@ -800,14 +804,14 @@ ORDER BY AnimalsCaredFor DESC;
 
 ### Q13. Staff and their supervisors (self join)
 ```sql
-SELECT s.FirstName || ' ' || s.LastName AS Employee,
+SELECT CONCAT(s.FirstName, ' ', s.LastName) AS Employee,
        s.Role,
-       m.FirstName || ' ' || m.LastName AS Supervisor
+       CONCAT(m.FirstName, ' ', m.LastName) AS Supervisor
 FROM STAFF s
 LEFT JOIN STAFF m ON s.SupervisorID = m.StaffID
 ORDER BY Supervisor, Employee;
 ```
-*Use:* organization chart. (In MySQL, use `CONCAT(...)` instead of `||`.)
+*Use:* organization chart.
 
 ### Q14. Daily ticket revenue and visitor count
 ```sql
@@ -848,14 +852,14 @@ ORDER BY TotalSpent DESC;
 3. The manager runs the missed-feedings query (Q7) at the end of the day.
 
 ### 9.3 Moving an animal to another enclosure
-Perform in **one transaction**:
+Perform in **one transaction** (T-SQL):
 ```sql
-BEGIN;
+BEGIN TRANSACTION;
 INSERT INTO ANIMAL_TRANSFER (AnimalID, FromEnclosureID, ToEnclosureID, TransferDate, Reason)
-VALUES (1, 3, 5, CURRENT_DATE, 'Breeding program');
+VALUES (1, 3, 5, CAST(GETDATE() AS DATE), 'Breeding program');
 
 UPDATE ANIMAL SET EnclosureID = 5 WHERE AnimalID = 1;
-COMMIT;
+COMMIT TRANSACTION;
 ```
 
 ### 9.4 Veterinary follow-up
@@ -880,7 +884,13 @@ COMMIT;
 - Veterinarians are identified by their `Role` in STAFF.
 - One zoo is the common case, but the ZOO table allows several.
 
-### Possible extensions
+### Implemented application extension (physical schema)
+| Extension | Where |
+|---|---|
+| Login credentials | `STAFF.PasswordHash` on Microsoft SQL Server (no separate `APP_USER` table) |
+| Desktop integration | Python + Tkinter + `pyodbc` against `ZooDB` |
+
+### Possible further extensions
 | Idea | New tables |
 |---|---|
 | Breeding tracking and family trees | `ANIMAL.MotherID`, `ANIMAL.FatherID` (self-references), `BREEDING_EVENT` |
@@ -888,7 +898,6 @@ COMMIT;
 | Events and shows | `EVENT`, `EVENT_STAFF` |
 | Equipment and maintenance tasks | `EQUIPMENT`, `MAINTENANCE_TASK` |
 | Medication inventory | `MEDICATION`, `PRESCRIPTION` |
-| User accounts and roles for the application | `APP_USER`, `ROLE` |
 | Audit trail | `AUDIT_LOG` |
 
 ---

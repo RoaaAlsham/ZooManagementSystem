@@ -34,8 +34,8 @@ B. Logical Design
      (zoo_database_documentation.md)
         │
         ▼
-C. Physical Design
-   • Implement tables in Zoo_Database.sql
+C. Physical Design (Microsoft SQL Server)
+   • Implement tables in ZooDB_FULL.sql (T-SQL)
    • Physical ER diagram (tables + attributes + crow’s foot)
 ```
 
@@ -48,7 +48,7 @@ C. Physical Design
 | Focus | Business entities and relationships | Tables as they will be stored |
 | Attributes | Named characteristics (no SQL types) | Columns with types, PK / FK |
 | Notation | Chen-style (entity / relationship / attribute) | Crow’s-foot tables (implementation) |
-| DBMS | None | Reflects chosen SQL schema |
+| DBMS | None | **Microsoft SQL Server** (T-SQL types / keys) |
 | Location | [`A_conceptual/conceptual_er_diagram.md`](A_conceptual/conceptual_er_diagram.md) | [`C_physical/physical_er_diagram.md`](C_physical/physical_er_diagram.md) |
 
 *(See also: [ER diagrams vs EER diagrams — conceptual vs physical models](https://nulab.com/learn/software-development/er-diagrams-vs-eer-diagrams-whats-the-difference/).)*
@@ -65,4 +65,4 @@ C. Physical Design
 | Schema documentation (full) | [`../../zoo_database_documentation.md`](../../zoo_database_documentation.md) |
 | Physical design narrative | [`C_physical/physical_design.md`](C_physical/physical_design.md) |
 | Physical ER diagram | [`C_physical/physical_er_diagram.md`](C_physical/physical_er_diagram.md) |
-| SQL DDL | [`../../Zoo_Database.sql`](../../Zoo_Database.sql) |
+| SQL Server DDL + seed | [`../../ZooManagementSystem_Desktop/ZooManagementSystem/database/ZooDB_FULL.sql`](../../ZooManagementSystem_Desktop/ZooManagementSystem/database/ZooDB_FULL.sql) |

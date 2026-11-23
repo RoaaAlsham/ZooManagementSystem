@@ -91,4 +91,4 @@ See also Section 5 of the schema documentation. High-level groups:
 - [x] Normalization to 3NF documented  
 - [x] Full documentation completed (`zoo_database_documentation.md`)  
 
-**Next:** Physical Design implements this schema in SQL and presents the **physical ER diagram** (tables with typed attributes and crow’s-foot notation).
+**Next:** Physical Design implements this schema on **Microsoft SQL Server** (T-SQL / `ZooDB_FULL.sql`) and presents the **physical ER diagram** (tables with typed attributes and crow’s-foot notation).
