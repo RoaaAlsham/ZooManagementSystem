@@ -38,12 +38,9 @@ class VetScreen(w.Screen):
     def refresh(self):
         t = w.today()
         rows = db.query(
-            "SELECT a.AnimalID, a.Name AS Animal, v.VaccineName, v.DateGiven, v.NextDue "
-            "FROM VACCINATION v JOIN ANIMAL a ON v.AnimalID = a.AnimalID "
-            "WHERE v.NextDue <= ? AND a.HealthStatus <> 'Deceased' "
-            "  AND NOT EXISTS (SELECT 1 FROM VACCINATION v2 WHERE v2.AnimalID = v.AnimalID "
-            "                  AND v2.VaccineName = v.VaccineName AND v2.DateGiven > v.DateGiven) "
-            "ORDER BY v.NextDue", [t + dt.timedelta(days=30)])
+            "SELECT AnimalID, Animal, VaccineName, DateGiven, NextDue "
+            "FROM dbo.vw_VaccinesDue "
+            "ORDER BY NextDue")
         for r in rows:
             r["Status"] = "🔴 Overdue" if db.to_date(r["NextDue"]) < t else "🟡 Due soon"
         self.vaccines.load(rows, ["Status", "Animal", "VaccineName", "DateGiven", "NextDue", "AnimalID"])

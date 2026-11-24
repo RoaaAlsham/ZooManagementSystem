@@ -17,8 +17,10 @@ Built with **Python + Tkinter** (user interface) and **Microsoft SQL Server** (d
 2. **File → Open → File…** → choose `database/ZooDB_FULL.sql`.
 3. Click inside the script (select nothing) and press **F5**.
    The script deletes an old ZooDB, creates the 20 tables and inserts sample data.
-4. Then open `database/ZooDB_Functions_Procedures.sql` and press **F5** (creates 3 functions and 5 stored procedures).
-5. Optional: run `database/ZooDB_Functions_Procedures_TEST.sql` — the last result grid must show only PASS.
+4. Run `database/ZooDB_Functions_Procedures.sql` (**F5**) — 3 functions and 5 stored procedures.
+5. Run `database/ZooDB_Transactions.sql` (**F5**) — `usp_RegisterAnimal` transaction.
+6. Run `database/ZooDB_Views.sql` (**F5**) — 5 views (`vw_AnimalDirectory`, `vw_FeedingToday`, `vw_VaccinesDue`, `vw_FoodStockEstimate`, `vw_TicketSalesToday`).
+7. Optional: run `database/ZooDB_Functions_Procedures_TEST.sql` — the last result grid must show only PASS.
 
 ## 2. Connection settings
 
@@ -106,7 +108,11 @@ app/
     └── screens/         # one file per screen
         animals.py habitats.py feeding.py vet.py inventory.py staff.py ticketing.py admin.py
 database/
-└── ZooDB_FULL.sql       # T-SQL: create database, 20 tables, sample data
+├── ZooDB_FULL.sql                      # create database, 20 tables, sample data
+├── ZooDB_Functions_Procedures.sql      # functions + stored procedures (DB transactions)
+├── ZooDB_Functions_Procedures_TEST.sql # optional SSMS checks
+├── ZooDB_Transactions.sql              # usp_RegisterAnimal transaction
+└── ZooDB_Views.sql                     # 5 reporting / screen views
 ```
 
 ## 9. Security

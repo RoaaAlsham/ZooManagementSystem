@@ -90,14 +90,10 @@ class TicketingScreen(w.Screen):
             self.qty.set("1")
 
     def refresh(self):
-        start = dt.datetime.combine(w.today(), dt.time(0, 0))
         rows = db.query(
-            "SELECT t.TicketID, tt.Name AS TicketType, t.Quantity, t.TotalPrice, t.VisitDate, t.PurchasedAt, "
-            "       s.FirstName AS SoldBy "
-            "FROM TICKET t JOIN TICKET_TYPE tt ON t.TicketTypeID = tt.TicketTypeID "
-            "LEFT JOIN STAFF s ON t.SoldByStaffID = s.StaffID "
-            "WHERE t.PurchasedAt >= ? AND t.PurchasedAt < ? ORDER BY t.PurchasedAt DESC",
-            [start, start + dt.timedelta(days=1)])
+            "SELECT TicketID, TicketType, Quantity, TotalPrice, VisitDate, PurchasedAt, SoldBy "
+            "FROM dbo.vw_TicketSalesToday "
+            "ORDER BY PurchasedAt DESC")
         self.sales.load(rows)
         self.m_tickets.configure(text=str(sum(int(r["Quantity"]) for r in rows)))
         self.m_revenue.configure(text=f"{sum(float(r['TotalPrice']) for r in rows):.2f} ₺")

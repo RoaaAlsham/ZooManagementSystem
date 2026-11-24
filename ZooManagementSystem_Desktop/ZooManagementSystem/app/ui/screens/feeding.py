@@ -38,19 +38,11 @@ class FeedingScreen(w.Screen):
             ttk.Label(bar, text="Tip: double-click a row to mark it as fed.", style="Muted.TLabel").pack(side="right")
 
     def refresh(self):
-        start = dt.datetime.combine(w.today(), dt.time(0, 0))
         rows = db.query(
-            "SELECT fp.PlanID, fp.FeedingTime, a.AnimalID, a.Name AS Animal, e.Name AS Enclosure, "
-            "       h.Name AS Habitat, ft.Name AS Food, fp.QuantityPerMeal, ft.Unit, "
-            "       fl.LogID, fl.FedAt, fl.QuantityGiven "
-            "FROM FEEDING_PLAN fp "
-            "JOIN ANIMAL a ON fp.AnimalID = a.AnimalID "
-            "JOIN FOOD_TYPE ft ON fp.FoodID = ft.FoodID "
-            "LEFT JOIN ENCLOSURE e ON a.EnclosureID = e.EnclosureID "
-            "LEFT JOIN HABITAT h ON e.HabitatID = h.HabitatID "
-            "LEFT JOIN FEEDING_LOG fl ON fl.PlanID = fp.PlanID AND fl.FedAt >= ? AND fl.FedAt < ? "
-            "WHERE a.HealthStatus <> 'Deceased' "
-            "ORDER BY fp.FeedingTime, a.Name", [start, start + dt.timedelta(days=1)])
+            "SELECT PlanID, FeedingTime, AnimalID, Animal, Enclosure, Habitat, Food, "
+            "       QuantityPerMeal, Unit, LogID, FedAt, QuantityGiven "
+            "FROM dbo.vw_FeedingToday "
+            "ORDER BY FeedingTime, Animal")
         if self.mine.get():
             mine = {int(r["AnimalID"]) for r in db.query(
                 "SELECT AnimalID FROM CARE_ASSIGNMENT WHERE StaffID = ? AND EndDate IS NULL", [self.user["StaffID"]])}

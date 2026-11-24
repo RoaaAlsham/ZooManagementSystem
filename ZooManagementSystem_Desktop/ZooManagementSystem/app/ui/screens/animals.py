@@ -93,22 +93,18 @@ class AnimalsScreen(w.Screen):
                   style="Muted.TLabel").pack(side="right")
 
     def refresh(self):
-        sql = ("SELECT a.AnimalID, a.Name, s.CommonName AS Species, a.Gender, a.BirthDate, "
-               "       a.HealthStatus, e.Name AS Enclosure, h.Name AS Habitat "
-               "FROM ANIMAL a "
-               "JOIN SPECIES s ON a.SpeciesID = s.SpeciesID "
-               "LEFT JOIN ENCLOSURE e ON a.EnclosureID = e.EnclosureID "
-               "LEFT JOIN HABITAT h ON e.HabitatID = h.HabitatID WHERE 1 = 1 ")
+        sql = ("SELECT AnimalID, Name, Species, Gender, BirthDate, HealthStatus, Enclosure, Habitat "
+               "FROM dbo.vw_AnimalDirectory WHERE 1 = 1 ")
         params = []
         if self.name.get().strip():
-            sql += "AND a.Name LIKE ? "
+            sql += "AND Name LIKE ? "
             params.append(f"%{self.name.get().strip()}%")
-        for label, col in [("Species", "s.CommonName"), ("Health", "a.HealthStatus"), ("Habitat", "h.Name")]:
+        for label, col in [("Species", "Species"), ("Health", "HealthStatus"), ("Habitat", "Habitat")]:
             value = self.filters[label].get()
             if value and value != "All":
                 sql += f"AND {col} = ? "
                 params.append(value)
-        rows = db.query(sql + "ORDER BY a.Name", params)
+        rows = db.query(sql + "ORDER BY Name", params)
         self.table.load(rows)
         self.count.configure(text=f"{len(rows)} animal(s)")
 

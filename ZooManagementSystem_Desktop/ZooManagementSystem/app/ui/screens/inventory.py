@@ -49,15 +49,8 @@ class InventoryScreen(w.Screen):
     def refresh(self):
         t = w.today()
         self.stock.load(db.query(
-            "SELECT ft.FoodID, ft.Name AS Food, ft.Category, ft.Unit, "
-            "       COALESCE(p.Purchased, 0) AS Purchased, COALESCE(c.Consumed, 0) AS Consumed, "
-            "       COALESCE(p.Purchased, 0) - COALESCE(c.Consumed, 0) AS EstimatedStock "
-            "FROM FOOD_TYPE ft "
-            "LEFT JOIN (SELECT FoodID, SUM(Quantity) AS Purchased FROM FOOD_STOCK GROUP BY FoodID) p "
-            "       ON p.FoodID = ft.FoodID "
-            "LEFT JOIN (SELECT fp.FoodID, SUM(fl.QuantityGiven) AS Consumed "
-            "           FROM FEEDING_LOG fl JOIN FEEDING_PLAN fp ON fl.PlanID = fp.PlanID "
-            "           GROUP BY fp.FoodID) c ON c.FoodID = ft.FoodID "
+            "SELECT FoodID, Food, Category, Unit, Purchased, Consumed, EstimatedStock "
+            "FROM dbo.vw_FoodStockEstimate "
             "ORDER BY EstimatedStock"))
         self.expiring.load(db.query(
             "SELECT ft.Name AS Food, fs.Quantity, ft.Unit, fs.ExpiryDate, sp.Name AS Supplier "
