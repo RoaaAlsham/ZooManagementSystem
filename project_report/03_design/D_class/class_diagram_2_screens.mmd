@@ -1,0 +1,63 @@
+classDiagram
+    direction LR
+    class Screen {
+        <<abstract>>
+        +user
+        +build()
+        +refresh()
+        +safe_refresh()
+        +run(action, success, roles)
+    }
+    class AnimalsScreen {
+        +add_animal()
+        +open_detail()
+    }
+    class AnimalDetail {
+        +animal_id
+        +transfer()
+        +deceased()
+        +edit()
+        +assign_keeper()
+        +add_plan()
+    }
+    class HabitatsScreen {
+        +add_habitat()
+        +add_enclosure()
+        +update_enclosure()
+    }
+    class FeedingScreen {
+        +mark_fed()
+    }
+    class VetScreen {
+        +checkup()
+        +vaccinate()
+    }
+    class InventoryScreen {
+        +add_food()
+        +add_delivery()
+        +add_supplier()
+    }
+    class StaffScreen {
+        +add_staff()
+        +add_shift()
+        +change_password()
+    }
+    class TicketingScreen {
+        +sell()
+        +update_total()
+    }
+    class AdminScreen {
+        +edit_zoo()
+        +add_species()
+        +change_price()
+    }
+
+    Screen <|-- AnimalsScreen
+    Screen <|-- HabitatsScreen
+    Screen <|-- FeedingScreen
+    Screen <|-- VetScreen
+    Screen <|-- InventoryScreen
+    Screen <|-- StaffScreen
+    Screen <|-- TicketingScreen
+    Screen <|-- AdminScreen
+    AnimalsScreen --> AnimalDetail : opens

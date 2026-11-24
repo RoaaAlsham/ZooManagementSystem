@@ -81,12 +81,17 @@ class TicketingScreen(w.Screen):
         if visit < w.today():
             w.error(self, "The visit date cannot be in the past.")
             return
+        # Shown in the message only; the stored total is calculated inside SQL Server (fn_TicketLineTotal)
         price = float(db.scalar("SELECT Price FROM TICKET_TYPE WHERE TicketTypeID = ?", [int(t["TicketTypeID"])]))
         total = round(price * qty, 2)
-        if self.run(lambda: db.insert("TICKET", {
-                "TicketTypeID": int(t["TicketTypeID"]), "SoldByStaffID": self.user["StaffID"], "VisitDate": visit,
-                "PurchasedAt": dt.datetime.now().replace(microsecond=0), "Quantity": qty, "TotalPrice": total},
-                "TicketID"), f"Sold {qty} ticket(s) — total {total:.2f} ₺", ["Cashier"]):
+
+        def do_sell():
+            # Transaction T5 - usp_SellTicket checks the rules and inserts TICKET in one DB transaction
+            db.exec_proc("usp_SellTicket", {
+                "TicketTypeID": int(t["TicketTypeID"]), "Quantity": qty,
+                "VisitDate": visit, "SoldByStaffID": self.user["StaffID"]})
+
+        if self.run(do_sell, f"Sold {qty} ticket(s) — total {total:.2f} ₺", ["Cashier"]):
             self.qty.set("1")
 
     def refresh(self):

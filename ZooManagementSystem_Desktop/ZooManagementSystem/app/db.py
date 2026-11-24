@@ -12,19 +12,13 @@ All SQL in the application goes through this module:
 
 Every query uses ? placeholders (parameterized queries), never string
 concatenation of user input, so SQL injection is not possible.
-
-A SQLite backend (environment variable ZOO_BACKEND=sqlite) exists only for
-automated testing; the real application always uses SQL Server.
 """
 import datetime as dt
 import decimal
-import os
 import re
 from contextlib import contextmanager
 
 import config
-
-BACKEND = os.environ.get("ZOO_BACKEND", "mssql")
 
 _PREFERRED_DRIVERS = [
     "ODBC Driver 18 for SQL Server",
@@ -46,13 +40,6 @@ def _pick_driver(pyodbc):
 
 
 def connect():
-    if BACKEND == "sqlite":
-        import sqlite3
-
-        conn = sqlite3.connect(os.environ.get("ZOO_SQLITE_PATH", "zoo_test.db"))
-        conn.execute("PRAGMA foreign_keys = ON")
-        return conn
-
     import pyodbc
 
     driver = config.ODBC_DRIVER or _pick_driver(pyodbc)
@@ -70,13 +57,6 @@ def _param(value):
     """Convert Python values to what the database driver expects."""
     if isinstance(value, decimal.Decimal):
         return float(value)
-    if BACKEND == "sqlite":
-        if isinstance(value, dt.datetime):
-            return value.strftime("%Y-%m-%d %H:%M:%S")
-        if isinstance(value, dt.date):
-            return value.isoformat()
-        if isinstance(value, dt.time):
-            return value.strftime("%H:%M")
     return value
 
 
@@ -92,17 +72,6 @@ def query(sql, params=None):
         cur.execute(sql, _params(params))
         cols = [c[0] for c in cur.description]
         return [dict(zip(cols, row)) for row in cur.fetchall()]
-    finally:
-        conn.close()
-
-
-def columns_of(sql, params=None):
-    """Column names of a SELECT (used to draw empty tables)."""
-    conn = connect()
-    try:
-        cur = conn.cursor()
-        cur.execute(sql, _params(params))
-        return [c[0] for c in cur.description]
     finally:
         conn.close()
 
@@ -130,9 +99,6 @@ class Tx:
         cols = ", ".join(data.keys())
         marks = ", ".join("?" for _ in data)
         values = _params(list(data.values()))
-        if BACKEND == "sqlite":
-            self.cur.execute(f"INSERT INTO {table} ({cols}) VALUES ({marks})", values)
-            return self.cur.lastrowid
         self.cur.execute(
             f"INSERT INTO {table} ({cols}) OUTPUT INSERTED.{id_col} VALUES ({marks})", values
         )

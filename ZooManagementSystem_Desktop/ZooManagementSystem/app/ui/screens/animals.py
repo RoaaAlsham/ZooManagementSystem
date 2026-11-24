@@ -35,27 +35,22 @@ def food_options():
 
 
 def enclosures_with_space(exclude_id=None):
-    """Enclosures that are not under maintenance and still have free places."""
+    """Enclosures that are not under maintenance and still have free places.
+    Free places are calculated by the database function dbo.fn_EnclosureFreeSpaces."""
     rows = db.query(
-        "SELECT e.EnclosureID, e.Name, h.Name AS Habitat, e.Capacity, COUNT(a.AnimalID) AS Occupancy "
-        "FROM ENCLOSURE e "
-        "JOIN HABITAT h ON e.HabitatID = h.HabitatID "
-        "LEFT JOIN ANIMAL a ON a.EnclosureID = e.EnclosureID "
-        "WHERE e.Condition <> 'Under Maintenance' "
-        "GROUP BY e.EnclosureID, e.Name, h.Name, e.Capacity "
-        "HAVING e.Capacity - COUNT(a.AnimalID) > 0 "
+        "SELECT e.EnclosureID, e.Name, h.Name AS Habitat, dbo.fn_EnclosureFreeSpaces(e.EnclosureID) AS FreeSpaces "
+        "FROM ENCLOSURE e JOIN HABITAT h ON e.HabitatID = h.HabitatID "
+        "WHERE e.Condition <> 'Under Maintenance' AND dbo.fn_EnclosureFreeSpaces(e.EnclosureID) > 0 "
         "ORDER BY h.Name, e.Name")
     rows = [r for r in rows if r["EnclosureID"] != exclude_id]
-    return w.opts(rows, "EnclosureID",
-                  lambda r: f"{r['Name']} ({r['Habitat']}) — free: {int(r['Capacity']) - int(r['Occupancy'])}")
+    return w.opts(rows, "EnclosureID", lambda r: f"{r['Name']} ({r['Habitat']}) — free: {int(r['FreeSpaces'])}")
 
 
 def has_free_space(enclosure_id):
     r = db.query(
-        "SELECT e.Capacity, e.Condition, "
-        "       (SELECT COUNT(*) FROM ANIMAL a WHERE a.EnclosureID = e.EnclosureID) AS Occupancy "
-        "FROM ENCLOSURE e WHERE e.EnclosureID = ?", [enclosure_id])[0]
-    return r["Condition"] != "Under Maintenance" and int(r["Occupancy"]) < int(r["Capacity"])
+        "SELECT Condition, dbo.fn_EnclosureFreeSpaces(EnclosureID) AS FreeSpaces "
+        "FROM ENCLOSURE WHERE EnclosureID = ?", [enclosure_id])[0]
+    return r["Condition"] != "Under Maintenance" and int(r["FreeSpaces"]) > 0
 
 
 # ---------------------------------------------------------------- list screen

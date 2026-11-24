@@ -227,8 +227,8 @@ Add a short report chapter (or extend physical design) covering:
 ## 7. Definition of done (submission-ready)
 
 - [ ] Views V1–V5 created on SQL Server  
-- [ ] Functions F1–F3 created on SQL Server  
-- [ ] Procedures P1–P5 created with **DB-level** `BEGIN TRANSACTION` / `COMMIT` / `ROLLBACK`  
+- [x] Functions F1–F3 created on SQL Server  
+- [x] Procedures P1–P5 created with **DB-level** `BEGIN TRANSACTION` / `COMMIT` / `ROLLBACK`  
 - [ ] Desktop app reads views and calls procedures for the listed screens/actions  
 - [ ] Report embeds conceptual + physical ER PNGs  
 - [ ] Report documents each view/function/procedure/transaction and **where implemented**  

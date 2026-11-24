@@ -79,7 +79,8 @@ class FeedingScreen(w.Screen):
              "default": row["QuantityPerMeal"], "required": True, "min": 0},
             {"name": "Notes", "label": "Notes (appetite, refusal …)", "type": "text"}], submit_text="Save feeding")
         if v:
-            self.run(lambda: db.insert("FEEDING_LOG", {
+            # Transaction T6 - usp_LogFeeding locks the plan, checks "not fed today" (fn_IsFedToday)
+            # and inserts FEEDING_LOG in one DB transaction
+            self.run(lambda: db.exec_proc("usp_LogFeeding", {
                 "PlanID": int(row["PlanID"]), "StaffID": self.user["StaffID"],
-                "FedAt": dt.datetime.now().replace(microsecond=0), "QuantityGiven": v["Qty"],
-                "Notes": v["Notes"]}, "LogID"), "Feeding saved.", ["Keeper", "Manager"])
+                "QuantityGiven": v["Qty"], "Notes": v["Notes"]}), "Feeding saved.", ["Keeper", "Manager"])

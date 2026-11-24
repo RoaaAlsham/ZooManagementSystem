@@ -1,0 +1,8 @@
+# Python cache files (created automatically when the app runs)
+__pycache__/
+*.pyc
+
+# Built executable
+build/
+dist/
+*.spec

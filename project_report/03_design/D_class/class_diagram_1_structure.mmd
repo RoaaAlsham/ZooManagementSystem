@@ -1,0 +1,62 @@
+classDiagram
+    direction TB
+    class App {
+        -frame
+        +show_login()
+        +show_main(user)
+    }
+    class LoginFrame {
+        +submit()
+    }
+    class MainFrame {
+        +user
+        +current : Screen
+        +open(page)
+    }
+    class Screen {
+        <<abstract>>
+        +user
+        +build()
+        +refresh()
+        +safe_refresh()
+        +run(action, success, roles)
+    }
+    class Table {
+        +load(rows, columns)
+        +selected()
+    }
+    class FormDialog {
+        +result
+    }
+    class auth {
+        <<module>>
+        +PAGE_ACCESS
+        +login(email, password)
+        +hash_password(password)
+        +allowed_pages(user)
+        +require_role(user, roles)
+    }
+    class db {
+        <<module>>
+        +connect()
+        +query(sql, params)
+        +execute(sql, params)
+        +insert(table, data, id_col)
+        +transaction()
+        +exec_proc(name, params)
+        +friendly_error(exc)
+    }
+    class PermissionDenied {
+        <<exception>>
+    }
+
+    App *-- LoginFrame : shows
+    App *-- MainFrame : shows
+    MainFrame o-- Screen : current screen
+    Screen ..> Table : uses
+    Screen ..> FormDialog : uses
+    Screen ..> auth : role check
+    Screen ..> db : SQL / EXEC
+    LoginFrame ..> auth : login
+    auth ..> db : reads STAFF
+    auth ..> PermissionDenied : raises
