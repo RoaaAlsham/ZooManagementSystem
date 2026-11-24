@@ -28,14 +28,21 @@ This report follows the **Database Development Lifecycle**. Each phase has its o
 
 ---
 
-## Quick Navigation
+## Combined Report (for PDF export)
+
+**Use this single file for submission / PDF conversion:**
+
+> [`Zoo_Management_System_Project_Report.md`](Zoo_Management_System_Project_Report.md)
+
+It merges planning, analysis, design, ER diagram images, and the **views / functions / procedures / transactions** chapter (with where each is applied).
+
+## Quick Navigation (phase folders)
 
 1. [Cover Page](00_cover/cover_page.md)
 2. [Planning](01_planning/planning.md)
 3. [Analysis](02_analysis/analysis.md) · [UI Requirements](02_analysis/ui_pages_requirements.md)
 4. [Design Overview](03_design/README.md)
    - [Conceptual Design](03_design/A_conceptual/conceptual_design.md) · [Conceptual ER](03_design/A_conceptual/conceptual_er_diagram.md)
-   - [Logical Design](03_design/B_logical/logical_design.md)
    - [Physical Design](03_design/C_physical/physical_design.md) · [Physical ER](03_design/C_physical/physical_er_diagram.md)
 
 ---
