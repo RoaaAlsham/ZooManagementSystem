@@ -151,23 +151,20 @@ class AnimalsScreen(w.Screen):
             return
 
         def do_register():
-            with db.transaction() as tx:
-                new_id = tx.insert("ANIMAL", {
-                    "SpeciesID": v["SpeciesID"], "EnclosureID": v["EnclosureID"], "Name": v["Name"],
-                    "Gender": v["Gender"], "BirthDate": v["BirthDate"], "ArrivalDate": v["ArrivalDate"],
-                    "Origin": v["Origin"], "HealthStatus": "Healthy"}, "AnimalID")
-                if v["VetID"] and v["Vaccine"]:
-                    tx.insert("VACCINATION", {
-                        "AnimalID": new_id, "VetID": v["VetID"], "VaccineName": v["Vaccine"],
-                        "DateGiven": w.today(), "NextDue": v["NextDue"]}, "VaccinationID")
-                if v["KeeperID"]:
-                    tx.insert("CARE_ASSIGNMENT", {
-                        "StaffID": v["KeeperID"], "AnimalID": new_id, "StartDate": w.today(),
-                        "Responsibility": "Daily care"}, "AssignmentID")
-                if v["FoodID"]:
-                    tx.insert("FEEDING_PLAN", {
-                        "AnimalID": new_id, "FoodID": v["FoodID"], "QuantityPerMeal": v["Qty"] or 1.0,
-                        "FeedingTime": v["Time"] or dt.time(9, 0), "Frequency": "Daily"}, "PlanID")
+            # Transaction T1 - one DATABASE-LEVEL transaction in SQL Server:
+            # ANIMAL + VACCINATION + CARE_ASSIGNMENT + FEEDING_PLAN (see ZooDB_Transactions.sql)
+            with_vaccine = bool(v["VetID"] and v["Vaccine"])
+            db.exec_proc("usp_RegisterAnimal", {
+                "Name": v["Name"], "SpeciesID": v["SpeciesID"], "Gender": v["Gender"],
+                "ArrivalDate": v["ArrivalDate"], "BirthDate": v["BirthDate"], "Origin": v["Origin"],
+                "EnclosureID": v["EnclosureID"],
+                "VetID": v["VetID"] if with_vaccine else None,
+                "VaccineName": v["Vaccine"] if with_vaccine else None,
+                "NextDue": v["NextDue"] if with_vaccine else None,
+                "KeeperID": v["KeeperID"],
+                "FoodID": v["FoodID"],
+                "QuantityPerMeal": (v["Qty"] or 1.0) if v["FoodID"] else None,
+                "FeedingTime": (v["Time"] or dt.time(9, 0)) if v["FoodID"] else None})
 
         self.run(do_register, f"{v['Name']} was registered.", roles=["Manager"])
 
@@ -330,11 +327,9 @@ class AnimalDetail(tk.Toplevel):
             return
 
         def do_transfer():
-            with db.transaction() as tx:
-                tx.insert("ANIMAL_TRANSFER", {
-                    "AnimalID": self.animal_id, "FromEnclosureID": int(current), "ToEnclosureID": v["To"],
-                    "TransferDate": w.today(), "Reason": v["Reason"]}, "TransferID")
-                tx.execute("UPDATE ANIMAL SET EnclosureID = ? WHERE AnimalID = ?", [v["To"], self.animal_id])
+            # Transaction T2 - ANIMAL_TRANSFER + ANIMAL in one DB transaction (usp_TransferAnimal)
+            db.exec_proc("usp_TransferAnimal", {
+                "AnimalID": self.animal_id, "ToEnclosureID": v["To"], "Reason": v["Reason"]})
 
         self.run(do_transfer, "Transfer saved.", ["Manager"])
 
@@ -355,11 +350,8 @@ class AnimalDetail(tk.Toplevel):
             return
 
         def do_deceased():
-            with db.transaction() as tx:
-                tx.execute("UPDATE ANIMAL SET HealthStatus = 'Deceased', EnclosureID = NULL WHERE AnimalID = ?",
-                           [self.animal_id])
-                tx.execute("UPDATE CARE_ASSIGNMENT SET EndDate = ? WHERE AnimalID = ? AND EndDate IS NULL",
-                           [w.today(), self.animal_id])
+            # Transaction T3 - ANIMAL + CARE_ASSIGNMENT in one DB transaction (usp_MarkAnimalDeceased)
+            db.exec_proc("usp_MarkAnimalDeceased", {"AnimalID": self.animal_id})
 
         self.run(do_deceased, "Animal marked as deceased.", ["Manager"])
 

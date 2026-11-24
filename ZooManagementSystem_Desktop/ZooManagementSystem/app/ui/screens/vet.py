@@ -77,11 +77,11 @@ class VetScreen(w.Screen):
             return
 
         def do_checkup():
-            with db.transaction() as tx:
-                tx.insert("MEDICAL_RECORD", {
-                    "AnimalID": v["Animal"], "VetID": self.user["StaffID"], "CheckupDate": t,
-                    "Diagnosis": v["Diagnosis"], "Treatment": v["Treatment"], "NextCheckup": v["Next"]}, "RecordID")
-                tx.execute("UPDATE ANIMAL SET HealthStatus = ? WHERE AnimalID = ?", [v["Status"], v["Animal"]])
+            # Transaction T4 - MEDICAL_RECORD + ANIMAL in one DB transaction (usp_RegisterCheckup)
+            db.exec_proc("usp_RegisterCheckup", {
+                "AnimalID": v["Animal"], "VetID": self.user["StaffID"], "Diagnosis": v["Diagnosis"],
+                "Treatment": v["Treatment"], "NextCheckup": v["Next"], "NewHealthStatus": v["Status"],
+                "CheckupDate": t})
 
         self.run(do_checkup, "Checkup saved.", ["Veterinarian"])
 

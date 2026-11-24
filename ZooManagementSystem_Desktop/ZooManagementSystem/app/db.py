@@ -6,6 +6,9 @@ All SQL in the application goes through this module:
   * execute()     -> one INSERT / UPDATE / DELETE, committed immediately
   * insert()      -> INSERT one row and return its new IDENTITY value
   * transaction() -> several statements that must succeed or fail together
+                     (application-level; used for simple helpers)
+  * exec_proc()   -> call a stored procedure dbo.usp_...; multi-table business
+                     actions run as DATABASE-LEVEL transactions inside them
 
 Every query uses ? placeholders (parameterized queries), never string
 concatenation of user input, so SQL injection is not possible.
@@ -16,6 +19,7 @@ automated testing; the real application always uses SQL Server.
 import datetime as dt
 import decimal
 import os
+import re
 from contextlib import contextmanager
 
 import config
@@ -160,6 +164,41 @@ def insert(table, data, id_col):
         return tx.insert(table, data, id_col)
 
 
+_PROC_NAME = re.compile(r"^usp_[A-Za-z0-9_]+$")
+
+
+def exec_proc(name, params=None):
+    """Call a stored procedure dbo.usp_... with named parameters.
+
+        db.exec_proc("usp_TransferAnimal", {"AnimalID": 3, "ToEnclosureID": 5, "Reason": "Space"})
+
+    The procedure itself runs BEGIN TRANSACTION / COMMIT / ROLLBACK, so the
+    commit-or-rollback decision is made INSIDE SQL Server (database-level
+    transaction). The connection is in autocommit mode so Python does not
+    wrap a second transaction around it.
+    Returns the first row the procedure SELECTs (e.g. {"AnimalID": 13}) or None.
+    """
+    if not _PROC_NAME.match(name):
+        raise ValueError("Invalid procedure name: " + name)
+    params = params or {}
+    sql = f"EXEC dbo.{name} " + ", ".join(f"@{key} = ?" for key in params)
+    conn = connect()
+    try:
+        conn.autocommit = True
+        cur = conn.cursor()
+        cur.execute(sql, _params(list(params.values())))
+        while cur.description is None and cur.nextset():
+            pass
+        if cur.description is None:
+            return None
+        row = cur.fetchone()
+        if row is None:
+            return None
+        return dict(zip([c[0] for c in cur.description], row))
+    finally:
+        conn.close()
+
+
 # ---------------------------------------------------------------- helpers
 def to_date(value):
     if value is None:
@@ -183,6 +222,10 @@ def to_time(value):
 def friendly_error(exc):
     """Translate database errors into messages a user understands."""
     msg = str(exc)
+    # Business-rule errors raised by our procedures with THROW 500xx
+    rule = re.search(r"\[SQL Server\]([^\[]+?)\s*\(50\d{3}\)", msg)
+    if rule:
+        return rule.group(1).strip()
     low = msg.lower()
     if "unique" in low or "duplicate key" in low:
         return "This record already exists (a value that must be unique is repeated)."
